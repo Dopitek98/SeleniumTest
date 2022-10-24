@@ -1,12 +1,16 @@
+package sampleTest;
+
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.Select;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -30,6 +34,28 @@ public class WebDriverManagerTest {
       FileUtils.copyFile(srcFile , new File("src/test/resources/Screenshots/test1.png"));
       driver.quit();
    }
+
+   @Test
+   public void openBrowserAndTakeScreenshotWithUniqName() throws IOException {
+      WebDriverManager.chromedriver().setup();
+      ChromeOptions chromeOptions = new ChromeOptions();
+      chromeOptions.setHeadless(false);
+      chromeOptions.setUnhandledPromptBehaviour(UnexpectedAlertBehaviour.ACCEPT);
+
+      int randNumber = (int) (Math.random()*1000);
+      String fileName = "openBrowserAndTakeScreenshotWithUniqName" + randNumber + ".png";
+      WebDriver driver = new ChromeDriver(chromeOptions);
+      JavascriptExecutor javascriptExecutor = (JavascriptExecutor) driver;
+      javascriptExecutor.executeScript("alert('hello')");
+      driver.get("https://www.google.pl/");
+
+      TakesScreenshot screenshot = (TakesScreenshot) driver;
+      File srcFile = screenshot.getScreenshotAs(OutputType.FILE);
+      FileUtils.copyFile(srcFile , new File("src/test/resources/Screenshots/" + fileName));
+      driver.quit();
+   }
+
+
 
    @Test
    public void firstTestWithManager(){
@@ -67,6 +93,65 @@ public class WebDriverManagerTest {
       search.sendKeys("Kot");
       search.sendKeys(Keys.ENTER);
 
+   }
+
+   @Test
+   public void FindDataWithSelectorAndClickWebElementWithMouse(){
+      WebDriverManager.chromedriver().setup();
+      ChromeDriver chromeDriver = new ChromeDriver();
+
+      chromeDriver.get("https://www.google.pl/");
+      WebElement cookieBanner = chromeDriver.findElement(By.xpath("//div[text()='Zaakceptuj wszystko']"));
+      cookieBanner.click();
+
+      WebElement search = chromeDriver.findElement(By.name("q"));
+      search.sendKeys("Michał");
+      search.clear();
+      search.sendKeys("Kot");
+
+      Actions actions = new Actions(chromeDriver);
+      actions.contextClick(chromeDriver.findElement(By.xpath("(//input[@value='Szukaj w Google'])[2]"))).perform();
+
+   }
+
+   @Test
+   public void FindDataWithSelectorAndClickWebElementWithMouseTwoTimes(){
+      WebDriverManager.chromedriver().setup();
+      ChromeDriver chromeDriver = new ChromeDriver();
+
+      chromeDriver.get("https://www.google.pl/");
+      WebElement cookieBanner = chromeDriver.findElement(By.xpath("//div[text()='Zaakceptuj wszystko']"));
+      cookieBanner.click();
+
+      WebElement search = chromeDriver.findElement(By.name("q"));
+      search.sendKeys("Michał");
+      search.clear();
+      search.sendKeys("Kot");
+
+      Actions actions = new Actions(chromeDriver);
+      actions.doubleClick(chromeDriver.findElement(By.xpath("(//input[@value='Szukaj w Google'])[2]"))).perform();
+
+   }
+
+   @Test
+   public void FindDataWithSelectorAndClickWebElementWithMouseTwoTimesAndGetPageInfo(){
+      WebDriverManager.chromedriver().setup();
+      ChromeDriver chromeDriver = new ChromeDriver();
+
+      chromeDriver.get("https://www.google.pl/");
+      WebElement cookieBanner = chromeDriver.findElement(By.xpath("//div[text()='Zaakceptuj wszystko']"));
+      cookieBanner.click();
+
+      WebElement search = chromeDriver.findElement(By.name("q"));
+      search.sendKeys("Michał");
+      search.clear();
+      search.sendKeys("Kot");
+
+      Actions actions = new Actions(chromeDriver);
+      actions.doubleClick(chromeDriver.findElement(By.xpath("(//input[@value='Szukaj w Google'])[2]"))).perform();
+
+      String pageName = chromeDriver.getTitle();
+      System.out.println(pageName);
    }
 
    @Test
